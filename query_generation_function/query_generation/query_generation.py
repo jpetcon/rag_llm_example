@@ -162,9 +162,9 @@ class EntityExtraction:
         try:
             s3 = boto3.client('s3')
 
-            s3.download_file(self.entity_list_bucket, self.entity_list_key, '../tmp/{}'.format(self.entity_list_key))
+            s3.download_file(self.entity_list_bucket, self.entity_list_key, '/tmp/{}'.format(self.entity_list_key))
 
-            with open('../tmp/{}'.format(self.entity_list_key)) as f:
+            with open('/tmp/{}'.format(self.entity_list_key)) as f:
                 self.entity_list = json.load(f)
 
         except:
@@ -232,13 +232,15 @@ class QueryEncoding:
 
 class VectorRetrieval:
 
-    def __init__(self, user_query_vector, decomposition_vector_list, years, clubs, entity_list):
+    def __init__(self, user_query_vector, decomposition_vector_list, years, clubs, entity_list, pinecone_api, pinecone_index):
         self.context_list = []
         self.user_query_vector = user_query_vector
         self.decomposition_vector_list = decomposition_vector_list
         self.years = years
         self.clubs = clubs
         self.entity_list = entity_list
+        self.pinecone_api = pinecone_api
+        self.pinecone_index = pinecone_index
 
 
     
@@ -250,7 +252,7 @@ class VectorRetrieval:
 
         try:
 
-            original_query_response = ExternalInteractions.pinecone_query(query_vector=self.user_query_vector, query_filter= {})
+            original_query_response = ExternalInteractions.pinecone_query(query_vector=self.user_query_vector, query_filter= {}, pinecone_api=self.pinecone_api, pinecone_index=self.pinecone_index)
 
             for i in original_query_response['matches']:
                 self.context_list.append(i['metadata']['text'])
@@ -265,7 +267,7 @@ class VectorRetrieval:
         try:
             for j in self.decomposition_vector_list:
 
-                decomposition_response = ExternalInteractions.pinecone_query(query_vector=j, query_filter= {})
+                decomposition_response = ExternalInteractions.pinecone_query(query_vector=j, query_filter= {}, pinecone_api=self.pinecone_api, pinecone_index=self.pinecone_index)
 
                 for k in decomposition_response['matches']:
                     self.context_list.append(k['metadata']['text'])
@@ -283,7 +285,7 @@ class VectorRetrieval:
 
                 years_list = self.years.split(', ')
 
-                original_query_response_years = ExternalInteractions.pinecone_query(query_vector=self.user_query_vector, query_filter= {"year": {"$in":years_list}})
+                original_query_response_years = ExternalInteractions.pinecone_query(query_vector=self.user_query_vector, query_filter= {"year": {"$in":years_list}}, pinecone_api=self.pinecone_api, pinecone_index=self.pinecone_index)
 
                 for l in original_query_response_years['matches']:
                     self.context_list.append(l['metadata']['text'])
@@ -302,7 +304,7 @@ class VectorRetrieval:
 
                 clubs_list = self.clubs.split(', ')
 
-                original_query_response_clubs = ExternalInteractions.pinecone_query(query_vector=self.user_query_vector, query_filter= {"club": {"$in":clubs_list}})
+                original_query_response_clubs = ExternalInteractions.pinecone_query(query_vector=self.user_query_vector, query_filter= {"club": {"$in":clubs_list}}, pinecone_api=self.pinecone_api, pinecone_index=self.pinecone_index)
 
                 for m in original_query_response_clubs['matches']:
                     self.context_list.append(m['metadata']['text'])
@@ -317,11 +319,11 @@ class VectorRetrieval:
 
         try:
 
-            if self.entities != None:
+            if self.entity_list != None:
 
                 query_entities_list = self.entity_list.split(', ')
 
-                original_query_response_entities = ExternalInteractions.pinecone_query(query_vector=self.user_query_vector, query_filter= {"entities": {"$in":query_entities_list}})
+                original_query_response_entities = ExternalInteractions.pinecone_query(query_vector=self.user_query_vector, query_filter= {"entities": {"$in":query_entities_list}}, pinecone_api=self.pinecone_api, pinecone_index=self.pinecone_index)
 
                 for m in original_query_response_entities['matches']:
                     self.context_list.append(m['metadata']['text'])
