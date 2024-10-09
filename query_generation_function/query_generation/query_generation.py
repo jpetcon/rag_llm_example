@@ -87,12 +87,12 @@ class SubqueryGeneration:
         decomposition_prompt = subquery_prompt + output_format_instructions
 
         try:
-            decomposition = bedrock_interaction(model=self.model, prompt=decomposition_prompt)
+            decomposition = ExternalInteractions.bedrock_interaction(model=self.model, prompt=decomposition_prompt)
             self.decomposition_json = json.loads(decomposition)
         
         except:
             try:
-                decomposition = bedrock_interaction(model=self.model, prompt=decomposition_prompt)
+                decomposition = ExternalInteractions.bedrock_interaction(model=self.model, prompt=decomposition_prompt)
                 self.decomposition_json = json.loads(decomposition)
         
             except:
@@ -119,7 +119,7 @@ class MetadataFiltering:
 
             Output should only be years as a comma separated list. If no year found, output None""".format(self.user_query)
 
-            self.years = bedrock_interaction(model=model, prompt=year_prompt)
+            self.years = ExternalInteractions.bedrock_interaction(model=model, prompt=year_prompt)
         
         except:
             logging.warning("Unable to extract years from question")
@@ -136,7 +136,7 @@ class MetadataFiltering:
         Output should only be clubs as a comma separated list. If no club found, output None""".format(self.user_query)
 
         try:
-            self.clubs = bedrock_interaction(model=model, prompt=club_prompt)
+            self.clubs = ExternalInteractions.bedrock_interaction(model=model, prompt=club_prompt)
 
         except:
             logging.warning("Unable to extract clubs from question")
@@ -185,7 +185,7 @@ class EntityExtraction:
         Output should only be entities as a comma separated list and no other preamble. If no entities found, output None""".format(self.user_query, self.entity_list)
 
         try:
-            self.query_entities = bedrock_interaction(model=model, prompt=entity_prompt)
+            self.query_entities = ExternalInteractions.bedrock_interaction(model=model, prompt=entity_prompt)
 
         except:
             logging.warning("Unable to extract any entities from user query")
@@ -206,7 +206,7 @@ class QueryEncoding:
         '''Encodes the original query into an embedding/vector based on the given Hugging Face Model URL'''
 
         try:
-            self.user_query_vector = huggingface_query(payload={"inputs": user_query}, hf_api_url=self.hf_api_url, hf_token=self.hf_token)
+            self.user_query_vector = ExternalInteractions.huggingface_query(payload={"inputs": user_query}, hf_api_url=self.hf_api_url, hf_token=self.hf_token)
         except:
             logging.error("Unable to encode original query")
             raise
@@ -218,7 +218,7 @@ class QueryEncoding:
         try:
             for i in self.decomposition_json:
 	
-                subquery_output = huggingface_query(payload={"inputs": self.decomposition_json[i]}, hf_api_url=self.hf_api_url, hf_token=self.hf_token)
+                subquery_output = ExternalInteractions.huggingface_query(payload={"inputs": self.decomposition_json[i]}, hf_api_url=self.hf_api_url, hf_token=self.hf_token)
                 
                 self.decomposition_vector_list.append(subquery_output)
         
@@ -248,7 +248,7 @@ class VectorRetrieval:
 
         try:
 
-            original_query_response = pinecone_query(query_vector=self.user_query_vector, query_filter= {})
+            original_query_response = ExternalInteractions.pinecone_query(query_vector=self.user_query_vector, query_filter= {})
 
             for i in original_query_response['matches']:
                 self.context_list.append(i['metadata']['text'])
@@ -263,7 +263,7 @@ class VectorRetrieval:
         try:
             for j in self.decomposition_vector_list:
 
-                decomposition_response = pinecone_query(query_vector=j, query_filter= {})
+                decomposition_response = ExternalInteractions.pinecone_query(query_vector=j, query_filter= {})
 
                 for k in decomposition_response['matches']:
                     self.context_list.append(k['metadata']['text'])
@@ -281,7 +281,7 @@ class VectorRetrieval:
 
                 years_list = self.years.split(', ')
 
-                original_query_response_years = pinecone_query(query_vector=self.user_query_vector, query_filter= {"year": {"$in":years_list}})
+                original_query_response_years = ExternalInteractions.pinecone_query(query_vector=self.user_query_vector, query_filter= {"year": {"$in":years_list}})
 
                 for l in original_query_response_years['matches']:
                     self.context_list.append(l['metadata']['text'])
@@ -300,7 +300,7 @@ class VectorRetrieval:
 
                 clubs_list = self.clubs.split(', ')
 
-                original_query_response_clubs = pinecone_query(query_vector=self.user_query_vector, query_filter= {"club": {"$in":clubs_list}})
+                original_query_response_clubs = ExternalInteractions.pinecone_query(query_vector=self.user_query_vector, query_filter= {"club": {"$in":clubs_list}})
 
                 for m in original_query_response_clubs['matches']:
                     self.context_list.append(m['metadata']['text'])
@@ -319,7 +319,7 @@ class VectorRetrieval:
 
                 query_entities_list = self.entity_list.split(', ')
 
-                original_query_response_entities = pinecone_query(query_vector=self.user_query_vector, query_filter= {"entities": {"$in":query_entities_list}})
+                original_query_response_entities = ExternalInteractions.pinecone_query(query_vector=self.user_query_vector, query_filter= {"entities": {"$in":query_entities_list}})
 
                 for m in original_query_response_entities['matches']:
                     self.context_list.append(m['metadata']['text'])
@@ -349,11 +349,11 @@ class GenerateFinalAnswer:
                     Context - {}'''.format(self.user_query, self.context_list)
 
         try:
-            self.answer = bedrock_interaction(model=model, prompt=final_prompt)
+            self.answer = ExternalInteractions.bedrock_interaction(model=model, prompt=final_prompt)
         
         except:
             try:
-                self.answer = bedrock_interaction(model=model, prompt=final_prompt)
+                self.answer = ExternalInteractions.bedrock_interaction(model=model, prompt=final_prompt)
             
             except:
                 logging.error("Unable to generate final answer")
