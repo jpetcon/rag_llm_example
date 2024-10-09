@@ -148,9 +148,10 @@ class MetadataFiltering:
 # Entity Extraction
 class EntityExtraction:
 
-    def __init__(self, entity_list_bucket, entity_list_key):
+    def __init__(self, entity_list_bucket, entity_list_key, user_query):
         self.entity_list_bucket = entity_list_bucket
         self.entity_list_key = entity_list_key
+        self.user_query = user_query
         self.entity_list = None
         self.query_entities = None
 
