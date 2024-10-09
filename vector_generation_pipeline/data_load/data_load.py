@@ -47,7 +47,7 @@ class S3DataLoad(AbstractDataLoad):
 
 
         for j in self.directory_list:
-            os.mkdir('../tmp/{}'.format(j))
+            os.mkdir('/tmp/{}'.format(j))
         
     
     def load_data(self, s3_bucket):
@@ -56,7 +56,7 @@ class S3DataLoad(AbstractDataLoad):
         for i in self.file_list['Contents']:
 
             try:
-                self.s3.download_file(s3_bucket, i['Key'], '../tmp/{}'.format(i['Key']))
+                self.s3.download_file(s3_bucket, i['Key'], '/tmp/{}'.format(i['Key']))
                 logging.info("{} downloaded".format(i['Key']))
             
             except:
