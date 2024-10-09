@@ -201,7 +201,7 @@ class QueryEncoding:
         self.hf_api_url = hf_api_url
         self.hf_token = hf_token
         self.user_query_vector = None
-        self.decmposition_vector_list = []
+        self.decomposition_vector_list = []
 
     
     def original_query_encoding(self):
