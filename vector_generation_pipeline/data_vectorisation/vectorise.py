@@ -26,9 +26,9 @@ class PDFLoader:
         '''Retrieve list of PDF filepaths'''
 
         try:
-            for i in os.listdir('../tmp'):
+            for i in os.listdir('/tmp'):
                 if i != 'readme.md':
-                    self.file_paths.append([i, os.listdir('../tmp/{}'.format(i))])
+                    self.file_paths.append([i, os.listdir('/tmp/{}'.format(i))])
         except:
             logging.error('Unable to retrieve file paths')
             raise
@@ -40,7 +40,7 @@ class PDFLoader:
         try:
             for i in self.file_paths:
                 for j in i[1]:
-                    loader = PyPDFLoader('../tmp/{}/{}'.format(i[0], j))
+                    loader = PyPDFLoader('/tmp/{}/{}'.format(i[0], j))
                     chunks = loader.load_and_split(text_splitter=self.text_splitter)
                     self.all_chunks.append(chunks)
         except:
