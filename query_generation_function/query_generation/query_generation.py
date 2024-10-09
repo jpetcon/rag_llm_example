@@ -126,8 +126,8 @@ class MetadataFiltering:
             self.years = None
 
 
-    def years_extraction(self, model):
-        '''Extracts any year specified in the user query'''
+    def club_extraction(self, model):
+        '''Extracts any club specified in the user query'''
 
         club_prompt =  """Extract the club from this question:
 
