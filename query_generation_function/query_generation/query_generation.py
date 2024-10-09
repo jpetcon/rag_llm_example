@@ -195,8 +195,9 @@ class EntityExtraction:
 
 class QueryEncoding:
 
-    def __init__(self, decomposition_json, hf_api_url, hf_token):
+    def __init__(self, decomposition_json, hf_api_url, hf_token, user_query):
         self.decomposition_json = decomposition_json
+        self.user_query = user_query
         self.hf_api_url = hf_api_url
         self.hf_token = hf_token
         self.user_query_vector = None
