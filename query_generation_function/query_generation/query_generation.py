@@ -208,7 +208,7 @@ class QueryEncoding:
         '''Encodes the original query into an embedding/vector based on the given Hugging Face Model URL'''
 
         try:
-            self.user_query_vector = ExternalInteractions.huggingface_query(payload={"inputs": user_query}, hf_api_url=self.hf_api_url, hf_token=self.hf_token)
+            self.user_query_vector = ExternalInteractions.huggingface_query(payload={"inputs": self.user_query}, hf_api_url=self.hf_api_url, hf_token=self.hf_token)
         except:
             logging.error("Unable to encode original query")
             raise
