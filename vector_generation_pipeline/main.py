@@ -28,7 +28,7 @@ def main():
   vectors.vector_generation(encoding_model = 'bge-small-en-v1.5') # Must match the model used to encode queries
 
   upsert = vec.PineconeUpsert(chunks_df = vectors.chunks_df)
-  upsert.pinecone_upsert(pinecone_api = '', index_name = '')
+  upsert.pinecone_upsert(pinecone_secret_name='', index_name = '')
 
 
 if __name__ == "__main__":

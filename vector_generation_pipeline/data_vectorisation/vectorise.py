@@ -1,9 +1,11 @@
+from botocore.exceptions import ClientError
 from langchain_community.document_loaders import PyPDFLoader
 from langchain_text_splitters import RecursiveCharacterTextSplitter
 from pinecone.grpc import PineconeGRPC
 from sentence_transformers import SentenceTransformer
 
 import boto3
+import json
 import logging
 import os
 import pandas as pd
@@ -204,11 +206,37 @@ class PineconeUpsert:
 
         self.chunks_df = chunks_df
 
-    def pinecone_upsert(self, pinecone_api, index_name):
+    
+    def get_secret(secret_name):
+
+        region_name = "eu-west-2"
+
+        # Create a Secrets Manager client
+        session = boto3.session.Session()
+        client = session.client(
+            service_name='secretsmanager',
+            region_name=region_name
+        )
+
+        try:
+            get_secret_value_response = client.get_secret_value(
+                SecretId=secret_name
+            )
+        except ClientError as e:
+            # For a list of exceptions thrown, see
+            # https://docs.aws.amazon.com/secretsmanager/latest/apireference/API_GetSecretValue.html
+            raise e
+
+        return json.loads(get_secret_value_response['SecretString'])['key']
+    
+    
+    def pinecone_upsert(self, pinecone_secret_name, index_name):
         '''Upserts data from chunks_df into given pinecone index
             Params: pinecone_api (str) - api key for pinecone instance
                     index_name (str) - name of pinecone index'''
         
+
+        pinecone_api = self.get_secret(pinecone_secret_name)
 
         pc = PineconeGRPC(api_key=pinecone_api)
         index = pc.Index(index_name)
