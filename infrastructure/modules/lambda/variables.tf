@@ -5,6 +5,12 @@ variable "aws_region" {
   default     = "eu-west-2"
 }
 
+# AWS Account ID
+variable "aws_region" {
+  description = "The AWS region where resources will be created"
+  type        = string
+}
+
 # Lambda function name
 variable "lambda_function_name" {
   description = "The name of the Lambda function"
@@ -30,4 +36,16 @@ variable "timeout" {
   description = "The amount of time your Lambda Function has to run in seconds"
   type        = number
   default     = 180
+}
+
+# API Secret Name in Secrets Manager for Pinecone
+variable "api_secret_name_pinecone" {
+  description = "Name of the pinecone API key in Secrets Manager"
+  type        = string
+}
+
+# API Secret Name in Secrets Manager for Hugging Face
+variable "api_secret_name_hf" {
+  description = "Name of the Hugging Face API key in Secrets Manager"
+  type        = string
 }

@@ -45,8 +45,8 @@ resource "aws_iam_role_policy" "sm_policy" {
           "secretsmanager:GetSecretValue",
         ]
         Effect   = "Allow"
-        Resource = ["arn:aws:secretsmanager:eu-west-2:619491109680:secret:pinecone_api_rag_training-Ts7v52", 
-                    "arn:aws:secretsmanager:eu-west-2:619491109680:secret:hugging_face_api-mxtXQh"]
+        Resource = ["arn:aws:secretsmanager:${var.aws_region}:${var.aws_account_id}:secret:${var.api_secret_name_pinecone}", 
+                    "arn:aws:secretsmanager:${var.aws_region}:${var.aws_account_id}:secret:${var.api_secret_name_hf}"]
       },
     ]
   })
@@ -112,5 +112,6 @@ resource "aws_lambda_function" "query_generation_function" {
   image_uri     = var.ecr_image_uri
   timeout       = var.timeout
   memory_size   = var.memory_size
+  maximum_retry_attempts = 2
 
 }
