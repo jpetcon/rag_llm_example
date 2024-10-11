@@ -2,7 +2,7 @@
 variable "aws_region" {
   description = "The AWS region where resources will be created"
   type        = string
-  default     = "eu-west-1"
+  default     = "eu-west-2"
 }
 
 # Lambda function name

@@ -7,6 +7,10 @@ def main(event, context):
 
   user_query = event['user_query']
 
+  hf_token = qg.ExternalInteractions.get_secret(secret_name="hugging_face_api")
+  pinecone_api = qg.ExternalInteractions.get_secret(secret_name="pinecone_api_rag_training")
+
+  print(pinecone_api)
   # Generate Subqueries
   subqueries = qg.SubqueryGeneration(model='anthropic.claude-3-haiku-20240307-v1:0', user_query=user_query)
   subqueries.generate_subqueries()
@@ -26,13 +30,13 @@ def main(event, context):
   
 
   #Encode Query and Subqueries
-  encoding = qg.QueryEncoding(decomposition_json=subqueries.decomposition_json, hf_api_url= 'https://api-inference.huggingface.co/models/BAAI/bge-small-en-v1.5', hf_token=, user_query=user_query)
+  encoding = qg.QueryEncoding(decomposition_json=subqueries.decomposition_json, hf_api_url= 'https://api-inference.huggingface.co/models/BAAI/bge-small-en-v1.5', hf_token=hf_token, user_query=user_query)
   encoding.original_query_encoding()
   encoding.subquery_encoding()
   
 
   #Retrieve Matched Vectors from Vector Database
-  retrieval = qg.VectorRetrieval(user_query_vector=encoding.user_query_vector, decomposition_vector_list=encoding.decomposition_vector_list, years=metadata.years, clubs=metadata.clubs, entity_list=entities.query_entities, pinecone_api=, pinecone_index=)
+  retrieval = qg.VectorRetrieval(user_query_vector=encoding.user_query_vector, decomposition_vector_list=encoding.decomposition_vector_list, years=metadata.years, clubs=metadata.clubs, entity_list=entities.query_entities, pinecone_api=pinecone_api, pinecone_index='rag-training-index')
   retrieval.build_context_list()
   
 
