@@ -18,7 +18,6 @@ module "s3-bucket-generation"{
     source = "../modules/s3"
 }
 
-
 module "lambda-query-generation"{
     source = "../modules/lambda"
 
@@ -34,4 +33,8 @@ module "ecs-vector-generation-pipeline"{
     security_groups = ""
     api_secret_name_pinecone = ""
 
+}
+
+module "query-api-gateway"{
+    source = "../modules/api-gateway"
 }
