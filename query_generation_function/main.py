@@ -10,7 +10,7 @@ def main(event, context):
   hf_token = qg.ExternalInteractions.get_secret(secret_name="hugging_face_api")
   pinecone_api = qg.ExternalInteractions.get_secret(secret_name="pinecone_api_rag_training")
 
-  print(pinecone_api)
+  
   # Generate Subqueries
   subqueries = qg.SubqueryGeneration(model='anthropic.claude-3-haiku-20240307-v1:0', user_query=user_query)
   subqueries.generate_subqueries()
